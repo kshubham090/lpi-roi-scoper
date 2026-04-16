@@ -1,7 +1,7 @@
 {
   "name": "Digital Twin ROI Scoper",
   "description": "Given an industry, a specific use case, and resource constraints, this agent queries three LPI tools (get_insights, get_case_studies, query_knowledge) to produce a realistic implementation scope report. Outputs: realistic scope, expected outcomes from similar real-world cases, which SMILE phases to prioritize, what to defer given constraints, and first actions. All claims cite their source tool. Runs fully locally via Ollama — no cloud API required.",
-  "url": "https://github.com/kshubham090/lpi-developer-kit",
+  "url": "https://github.com/kshubham090/lpi-roi-scoper",
   "version": "0.1.0",
   "defaultInputModes": ["text/plain"],
   "defaultOutputModes": ["text/plain"],
