@@ -1,8 +1,8 @@
 {
   "name": "Digital Twin ROI Scoper",
-  "description": "Given an industry, a specific use case, and resource constraints, this agent queries three LPI tools (get_insights, get_case_studies, query_knowledge) to produce a realistic implementation scope report. Outputs: realistic scope, expected outcomes from similar real-world cases, which SMILE phases to prioritize, what to defer given constraints, and first actions. All claims cite their source tool. Runs fully locally via Ollama — no cloud API required.",
+  "description": "Constraint-aware digital twin scoping agent. Given an industry, use case, and resource constraints, queries four LPI tools (smile_overview, get_insights, get_case_studies, query_knowledge) and synthesizes a structured ROI scope report. Every recommendation cites its source tool. Runs fully locally via Ollama — no cloud API required.",
   "url": "https://github.com/kshubham090/lpi-roi-scoper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "defaultInputModes": ["text/plain"],
   "defaultOutputModes": ["text/plain"],
   "capabilities": {
@@ -13,19 +13,28 @@
     {
       "protocolBinding": "MCP-stdio",
       "url": "local://python agent.py",
-      "comment": "Local subprocess. Requires Node.js (npm run build) and Ollama running on localhost:11434."
+      "comment": "Local subprocess. Requires Node.js (npm run build from lpi-developer-kit root) and Ollama on localhost:11434."
     }
   ],
   "skills": [
     {
       "id": "roi-scope",
       "name": "ROI Scope Generator",
-      "description": "Accepts industry (string), use_case (string), and constraints (string). Calls get_insights with the use case + industry scenario, get_case_studies filtered by industry, and query_knowledge for technical implementation context. Synthesizes a structured 5-section report via local LLM with full source provenance.",
-      "tags": ["digital-twin", "SMILE", "scoping", "ROI", "constraints", "planning"],
+      "description": "Accepts industry (string), usecase (string), and constraints (string). Calls smile_overview for methodology baseline, get_insights for scenario-specific advice, get_case_studies for real-world evidence, and query_knowledge for technical depth. Returns a structured 6-section report with full decision trace and source provenance.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "industry": { "type": "string", "maxLength": 500 },
+          "usecase": { "type": "string", "maxLength": 500 },
+          "constraints": { "type": "string", "maxLength": 500 }
+        },
+        "required": ["industry", "usecase", "constraints"]
+      },
+      "tags": ["digital-twin", "SMILE", "scoping", "ROI", "constraints", "planning", "explainability"],
       "examples": [
-        "I work in healthcare and want to do patient flow optimization with 2 developers and 3 months",
+        "I work in healthcare, patient flow optimization, 2 developers and 3 months, no cloud",
         "Manufacturing, predictive maintenance, small team and limited budget",
-        "Smart buildings, energy optimization, no cloud allowed"
+        "Smart buildings, energy optimization, no cloud, 1 engineer, 6 weeks"
       ]
     }
   ],
@@ -37,9 +46,9 @@
     "url": "https://github.com/kshubham090"
   },
   "_lpiMetadata": {
-    "lpiToolsUsed": ["get_insights", "get_case_studies", "query_knowledge"],
+    "lpiToolsUsed": ["smile_overview", "get_insights", "get_case_studies", "query_knowledge"],
     "llmProvider": "ollama",
     "llmModel": "qwen2.5:1.5b",
-    "explainability": "Every section of the output is grounded in one of the three tool responses. A Sources section at the end maps each tool call (with exact arguments) to what it contributed. The provenance chain is also printed separately to stdout after the report."
+    "explainability": "Every recommendation cites the source tool and the specific data that informed it. A Decision Trace section maps each call to the constraint it addresses. Provenance printed separately to stdout after the report."
   }
 }
